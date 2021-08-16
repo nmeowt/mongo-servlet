@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'war'
+    id "org.gretty" version "3.0.6"
+}
+
+group 'nmt.com'
+version '1.0-SNAPSHOT'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+defaultTasks("clean", "build")
+
+gretty {
+    httpPort = 8081
+    contextPath = "/"
+    servletContainer = "jetty9.4"
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.11'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    providedCompile "javax.servlet:javax.servlet-api:3.1.0"
+    implementation "org.slf4j:slf4j-simple:1.7.30"
+    compile 'org.mongodb:mongodb-driver-sync:4.1.1'
+}
+
+test {
+    useJUnitPlatform()
+}
