@@ -10,10 +10,13 @@ import java.net.UnknownHostException;
 
 @WebListener
 public class MongoDBContextListener implements ServletContextListener {
+    private static final String host = "localhost";
+    private static final int port = 27017;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext ctx = sce.getServletContext();
-        MongoClient mongo = new MongoClient("localhost", 27017);
+        MongoClient mongo = new MongoClient(host,port);
         System.out.println("MongoClient initialized successfully");
         sce.getServletContext().setAttribute("MONGO_CLIENT",mongo);
     }
