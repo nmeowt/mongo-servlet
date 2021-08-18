@@ -45,6 +45,7 @@ public class MongoDBCustomerDAO {
         this.col.remove(query);
     }
 
+    // update later
     public Customer readCustomer(Customer cus){
         DBObject query = BasicDBObjectBuilder.start().append("_id", new ObjectId(cus.getId())).get();
         DBObject data = this.col.findOne(query);
