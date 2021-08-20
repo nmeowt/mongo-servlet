@@ -26,7 +26,6 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     providedCompile "javax.servlet:javax.servlet-api:3.1.0"
     implementation "org.slf4j:slf4j-simple:1.7.30"
-    implementation group: 'redis.clients', name: 'jedis', version: '2.8.0'
     compile 'org.mongodb:mongodb-driver-legacy:4.1.2'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'

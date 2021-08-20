@@ -3,20 +3,14 @@ package nmt.com.dao;
 import com.mongodb.*;
 import nmt.com.converter.CustomerConverter;
 import nmt.com.model.Customer;
-import nmt.com.model.Key;
 import org.bson.types.ObjectId;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MongoDBCustomerDAO {
     //DAO class for different MongoDB CRUD operations
     DBCollection col;
-    Jedis jedis;
 
     public MongoDBCustomerDAO(MongoClient mongo) {
         this.col = mongo.getDB("demo").getCollection("customer");
@@ -35,9 +29,9 @@ public class MongoDBCustomerDAO {
         this.col.update(query, CustomerConverter.toDBObject(cus));
     }
 
-    public List<Customer> readAllCustomer() {
+    public List<Customer> readAllCustomer(Integer offset, Integer limit) {
         List<Customer> data = new ArrayList<Customer>();
-        DBCursor cursor = col.find();
+        DBCursor cursor = col.find().skip(offset).limit(limit);
         while (cursor.hasNext()) {
             DBObject doc = cursor.next();
             Customer cus = CustomerConverter.toCustomer(doc);

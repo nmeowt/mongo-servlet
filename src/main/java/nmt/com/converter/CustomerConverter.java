@@ -5,10 +5,19 @@ import com.mongodb.DBObject;
 import nmt.com.model.Customer;
 import org.bson.types.ObjectId;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
+
+
 public class CustomerConverter {
     // convert Person Object to MongoDB DBObject
     public static DBObject toDBObject(Customer cus) {
-        BasicDBObjectBuilder builder = BasicDBObjectBuilder.start().append("name", cus.getName()).append("country", cus.getCountry());
+        BasicDBObjectBuilder builder = BasicDBObjectBuilder.start()
+                .append("name", cus.getName())
+                .append("address", cus.getAddress())
+                .append("dateBirth", cus.getDateBirth())
+                .append("createdAt", cus.getCreatedAt());
         return builder.get();
     }
 
@@ -16,8 +25,12 @@ public class CustomerConverter {
     public static Customer toCustomer(DBObject doc) {
         Customer cus = new Customer();
         cus.setName((String) doc.get("name"));
-        cus.setCountry((String) doc.get("country"));
-        ObjectId id = (ObjectId)  doc.get("_id");
+        cus.setAddress((String) doc.get("address"));
+        cus.setDateBirth((Date) doc.get("dateBirth"));
+        Date date = (Date) doc.get("createdAt");
+        Timestamp createdAt = new Timestamp(date.getTime());
+        cus.setCreatedAt(createdAt);
+        ObjectId id = (ObjectId) doc.get("_id");
         cus.setId(id.toString());
         return cus;
     }

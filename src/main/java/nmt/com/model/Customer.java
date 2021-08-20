@@ -1,9 +1,14 @@
 package nmt.com.model;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 public class Customer {
     private String id;
     private String name;
-    private String country;
+    private String address;
+    private Date dateBirth;
+    private Timestamp createdAt;
 
     public String getId() {
         return id;
@@ -21,11 +26,27 @@ public class Customer {
         this.name = name;
     }
 
-    public String getCountry() {
-        return country;
+    public String getAddress() {
+        return address;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Date getDateBirth() {
+        return dateBirth;
+    }
+
+    public void setDateBirth(Date dateBirth) {
+        this.dateBirth = dateBirth;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 }

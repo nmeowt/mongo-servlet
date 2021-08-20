@@ -12,28 +12,32 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet("/customer")
 public class CustomerServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private MongoDBCustomerDAO customerDAO;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Integer offset = Integer.valueOf(req.getParameter("offset"));
+        Integer limit = Integer.valueOf(req.getParameter("limit"));
+
         MongoClient mongo = (MongoClient) req.getServletContext()
                 .getAttribute("MONGO_CLIENT");
         MongoDBCustomerDAO customerDAO = new MongoDBCustomerDAO(mongo);
-        List<Customer> customers = customerDAO.readAllCustomer();
+        List<Customer> customers = customerDAO.readAllCustomer(offset, limit);
+
         String context = "";
-        for (Customer cus: customers) {
+        for (Customer cus : customers) {
             String data = "{" +
-                    "\"id\": \""+ cus.getId() +"\"," +
-                    "\"name\": \""+ cus.getName() +"\"," +
-                    "\"country\": \""+ cus.getCountry() +"\"," +
+                    "\"id\": \"" + cus.getId() + "\"," +
+                    "\"name\": \"" + cus.getName() + "\"," +
+                    "\"address\": \"" + cus.getAddress() + "\"," +
+                    "\"dateBirth\": \"" + cus.getDateBirth() + "\"," +
+                    "\"createdAt\": \"" + cus.getCreatedAt() + "\"," +
                     "}";
-            context+= data + ",";
+            context += data + ",";
         }
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
@@ -44,23 +48,24 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String name = req.getParameter("name");
-        String country = req.getParameter("country");
+        String address = req.getParameter("address");
+        String dateBirth = req.getParameter("address");
 
-        if ((name == null || name.equals("")) || (country == null || country.equals(""))){
+        if ((name == null || name.equals("")) || (address == null || address.equals(""))) {
             System.out.println("Error");
         } else {
             Customer cus = new Customer();
             cus.setName(name);
-            cus.setCountry(country);
+            cus.setAddress(address);
             MongoClient mongo = (MongoClient) req.getServletContext().getAttribute("MONGO_CLIENT");
             MongoDBCustomerDAO customerDAO = new MongoDBCustomerDAO(mongo);
             customerDAO.createCustomer(cus);
             resp.setContentType("application/json");
             PrintWriter out = resp.getWriter();
             String context = "{" +
-                    "\"id\": \""+ cus.getId() +"\"," +
-                    "\"name\": \""+ cus.getName() +"\"," +
-                    "\"country\": \""+ cus.getCountry() +"\"," +
+                    "\"id\": \"" + cus.getId() + "\"," +
+                    "\"name\": \"" + cus.getName() + "\"," +
+                    "\"country\": \"" + cus.getAddress() + "\"," +
                     "}";
             out.print(context);
             out.flush();
@@ -75,7 +80,7 @@ public class CustomerServlet extends HttpServlet {
         if (id == null || "".equals(id)) {
             throw new ServletException("id missing for edit operation");
         }
-        if ((name == null || name.equals("")) || (country == null || country.equals(""))){
+        if ((name == null || name.equals("")) || (country == null || country.equals(""))) {
             throw new ServletException("name and country missing for edit operation");
         } else {
             MongoClient mongo = (MongoClient) req.getServletContext().getAttribute("MONGO_CLIENT");
@@ -83,14 +88,14 @@ public class CustomerServlet extends HttpServlet {
             Customer cus = new Customer();
             cus.setId(id);
             cus.setName(name);
-            cus.setCountry(country);
+            cus.setAddress(country);
             customerDAO.updateCustomer(cus);
             resp.setContentType("application/json");
             PrintWriter out = resp.getWriter();
             String context = "{" +
-                    "\"id\": \""+ cus.getId() +"\"," +
-                    "\"name\": \""+ cus.getName() +"\"," +
-                    "\"country\": \""+ cus.getCountry() +"\"," +
+                    "\"id\": \"" + cus.getId() + "\"," +
+                    "\"name\": \"" + cus.getName() + "\"," +
+                    "\"country\": \"" + cus.getAddress() + "\"," +
                     "}";
             out.print(context);
             out.flush();
