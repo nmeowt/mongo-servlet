@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class Customer {
     private String id;
+    private int code;
     private String name;
     private String address;
     private Date dateBirth;
@@ -16,6 +17,14 @@ public class Customer {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public String getName() {

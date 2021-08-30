@@ -14,6 +14,7 @@ public class CustomerConverter {
     // convert Person Object to MongoDB DBObject
     public static DBObject toDBObject(Customer cus) {
         BasicDBObjectBuilder builder = BasicDBObjectBuilder.start()
+                .append("code", cus.getCode())
                 .append("name", cus.getName())
                 .append("address", cus.getAddress())
                 .append("dateBirth", cus.getDateBirth())
@@ -24,6 +25,7 @@ public class CustomerConverter {
     // convert DBObject Object to Person
     public static Customer toCustomer(DBObject doc) {
         Customer cus = new Customer();
+        cus.setCode((Integer) doc.get("code"));
         cus.setName((String) doc.get("name"));
         cus.setAddress((String) doc.get("address"));
         cus.setDateBirth((Date) doc.get("dateBirth"));

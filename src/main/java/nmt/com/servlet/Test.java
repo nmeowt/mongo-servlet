@@ -1,7 +1,7 @@
 package nmt.com.servlet;
 
-import com.mongodb.*;
-import nmt.com.converter.CustomerConverter;
+import com.mongodb.MongoClient;
+import nmt.com.dao.MongoDBCustomerDAO;
 import nmt.com.model.Customer;
 
 import javax.servlet.ServletException;
@@ -10,52 +10,40 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.Date;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
-@WebServlet("/insert-test")
-public class Test extends HttpServlet implements Runnable{
-    Thread thread;
-
-    public void init() throws ServletException {
-        thread = new Thread(this);
-        thread.setPriority(Thread.MIN_PRIORITY);
-        thread.start();
-    }
-
-    @Override
-    public void run() {
-        create();
-    }
-
+@WebServlet("/test")
+public class Test extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        create();
-    }
+        int offset = 0;
+        int limit = 100000;
+        MongoClient mongo = (MongoClient) req.getServletContext()
+                .getAttribute("MONGO_CLIENT");
+        MongoDBCustomerDAO customerDAO = new MongoDBCustomerDAO(mongo);
+        String context = "";
+        List<List<Customer>> list = new ArrayList<>();
 
-    private void create(){
-        DBCollection collection = openConnection();
-        for (int i = 0; i < 1000000; i++) {
-            Customer cus = new Customer();
-            cus.setName("Chang " + (i+1));
-            cus.setAddress("Hanoi "+ (i+1));
-            cus.setDateBirth(new Date(99,7,30));
-            cus.setCreatedAt(Timestamp.from(Instant.now()));
-            DBObject doc = CustomerConverter.toDBObject(cus);
-            collection.insert(doc);
+        while (offset < 2000000) {
+            System.out.println(offset);
+            List<Customer> customers = customerDAO.readAllCustomer(offset, limit);
+            list.add(customers);
+            offset = offset + limit;
         }
+
+        List<Customer> head = list.get(0).subList(0, 5);
+        List<Customer> tail = list.get(list.size() - 1).subList(Math.max(list.get(list.size() - 1).size() - 5, 0), list.get(list.size() - 1).size());
+
+        context = CustomerServlet.getString(context,head);
+        context = CustomerServlet.getString(context,tail);
+
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+        out.print("[" + context + "]");
+        out.flush();
     }
 
-    private DBCollection openConnection(){
-        MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        DB database = mongoClient.getDB("demo");
-        DBCollection collection = database.getCollection("customer");
-        return collection;
-    }
 
-    public void destroy() {
-        System.out.println("Stop!!!");
-        thread.stop();
-    }
 }

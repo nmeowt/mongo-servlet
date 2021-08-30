@@ -27,11 +27,19 @@ public class CustomerServlet extends HttpServlet {
                 .getAttribute("MONGO_CLIENT");
         MongoDBCustomerDAO customerDAO = new MongoDBCustomerDAO(mongo);
         List<Customer> customers = customerDAO.readAllCustomer(offset, limit);
-
         String context = "";
+        context = getString(context, customers);
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+        out.print("[" + context + "]");
+        out.flush();
+    }
+
+    static String getString(String context, List<Customer> customers) {
         for (Customer cus : customers) {
             String data = "{" +
                     "\"id\": \"" + cus.getId() + "\"," +
+                    "\"code\": \"" + cus.getCode() + "\"," +
                     "\"name\": \"" + cus.getName() + "\"," +
                     "\"address\": \"" + cus.getAddress() + "\"," +
                     "\"dateBirth\": \"" + cus.getDateBirth() + "\"," +
@@ -39,10 +47,7 @@ public class CustomerServlet extends HttpServlet {
                     "}";
             context += data + ",";
         }
-        resp.setContentType("application/json");
-        PrintWriter out = resp.getWriter();
-        out.print("[" + context + "]");
-        out.flush();
+        return context;
     }
 
     @Override
@@ -57,6 +62,7 @@ public class CustomerServlet extends HttpServlet {
             Customer cus = new Customer();
             cus.setName(name);
             cus.setAddress(address);
+//            cus.setDateBirth(dateBirth);
             MongoClient mongo = (MongoClient) req.getServletContext().getAttribute("MONGO_CLIENT");
             MongoDBCustomerDAO customerDAO = new MongoDBCustomerDAO(mongo);
             customerDAO.createCustomer(cus);

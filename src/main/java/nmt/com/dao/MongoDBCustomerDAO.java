@@ -31,7 +31,8 @@ public class MongoDBCustomerDAO {
 
     public List<Customer> readAllCustomer(Integer offset, Integer limit) {
         List<Customer> data = new ArrayList<Customer>();
-        DBCursor cursor = col.find().skip(offset).limit(limit);
+        DBObject query = new BasicDBObject("code", new BasicDBObject("$gt", offset));
+        DBCursor cursor = col.find(query).sort(new BasicDBObject("code", 1)).limit(limit);
         while (cursor.hasNext()) {
             DBObject doc = cursor.next();
             Customer cus = CustomerConverter.toCustomer(doc);
